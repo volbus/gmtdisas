@@ -3,7 +3,7 @@ int
 Get_IOreg_Name (uint32_t add, char *text) {
   if (!(prog_mode & PROG_MODE_IONAME))
     return -1;
-  
+
   for (int i=0; i<ioreg_cnt; i++)
     if ( (ioregtable+i)->add == add ) {
       strcpy (text, (ioregtable+i)->name);
@@ -25,12 +25,12 @@ Write_Eeprom_Data (FILE *file, datablock *block) {
   uint32_t  eep_add = block->start_add;
 
   fprintf (file, ";-----------------------------------------------"
-                "--------------------------------");
+                "--------------------------------\n");
   fprintf (file, ".org 0x%04X\n", block->start_add);
-  
+
   while ((bytes < block->size) && (eep_add <= 0x4800)) {
     if ((bytes % 8) == 0) {
-      fprintf(file, "\n;0x%04X\n\t.byte 0x%02X", eep_add, block->data[bytes++]); 
+      fprintf(file, "\n;0x%04X\n\t.byte 0x%02X", eep_add, block->data[bytes++]);
       eep_add += 8;
     } else {
         fprintf (file, ",0x%02X", block->data[bytes++]);
@@ -52,12 +52,12 @@ Write_Opt_Data (FILE *file, datablock *block) {
   uint32_t  opt_add = block->start_add;
 
   fprintf (file, ";-----------------------------------------------"
-                "--------------------------------");
+                "--------------------------------\n");
   fprintf (file, ".org 0x%04X\n", block->start_add);
-  
+
   while ( (bytes < block->size) && (opt_add <= 0x4880) ) {
     if ((bytes % 4) == 0) {
-      fprintf(file, "\n;0x%04X\n\t.byte 0x%02X", opt_add, block->data[bytes++]); 
+      fprintf(file, "\n;0x%04X\n\t.byte 0x%02X", opt_add, block->data[bytes++]);
       opt_add += 4;
     } else {
         fprintf (file, ",0x%02X", block->data[bytes++]);
@@ -77,7 +77,7 @@ Write_Code_Data (FILE *file, datablock *block) {
   instruction ins;
   int oc[6];
   char ioname[36];
-  
+
   cnt = 0;
   add = block->start_add;
 
@@ -92,11 +92,11 @@ Write_Code_Data (FILE *file, datablock *block) {
     oc[3] = -1;
     oc[4] = -1;
     oc[5] = -1;
-    
+
     err  = 0;
     wrno = 0;
     n    = 1;
-    
+
     switch (oc[0]) {
       case 0x72:
         oc[1] = *(block->data + cnt + 1);
@@ -129,7 +129,7 @@ Write_Code_Data (FILE *file, datablock *block) {
         oc[0] = -1;
         ins = ins_table[oc[1]];
     }
-   
+
     if (err || !ins.size) {
       wrno += fprintf (file, "            .byte 0x%02X", oc[1]);
       ins.size = 1;
@@ -143,7 +143,7 @@ Write_Code_Data (FILE *file, datablock *block) {
         for (; n<ins.size; n++)
           oc[n] = *(block->data + cnt + n);
       }
-      
+
       switch (ins.des) {
         case NONE:
           break;
@@ -472,8 +472,8 @@ Write_Code_Data (FILE *file, datablock *block) {
         fprintf (file, "%02X ", oc[n]);
     }
     fputc ('\n', file);
-    
-    
+
+
     cnt += ins.size;
     add += ins.size;
   }

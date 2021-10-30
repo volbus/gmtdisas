@@ -97,7 +97,7 @@ read_next_word (unsigned char *buffer, int offset)
  * In the datablock structure writes the start_add, extoff_add, size and
  * line_sto fields.
  */
-int 
+int
 Ihex_Read_Data_Block_Size (FILE *file, datablock *block)
 {
   unsigned char line[512+32];
@@ -116,12 +116,12 @@ Ihex_Read_Data_Block_Size (FILE *file, datablock *block)
     //check first char ':'
     if (line[0]!=':')
       goto file_err;
-    
+
     //read the number of data bytes in the record
     cnt = read_next_byte (line, 1);
     if (cnt == -1)
         goto file_err;
-    
+
     //read the address of the record
     add = read_next_word (line, 3);
     if (add == -1)
@@ -193,7 +193,7 @@ file_err:
 /*
  * ...
  */
-int 
+int
 Ihex_Read_Data_Block (FILE *file, datablock *block)
 {
   uint32_t      chksum;
@@ -210,14 +210,14 @@ Ihex_Read_Data_Block (FILE *file, datablock *block)
   while ( fgets((char *)line, sizeof(line), file) ) {
     crtline++;
     i = 1;
-    
+
     //read the number of data bytes in the record
     cnt = read_next_byte (line, i);
     if (cnt == -1)
         goto file_err;
     i += 2;
     chksum = cnt;
-    
+
     //read the address of the record
     add = read_next_word (line, i);
     if (add == -1)
@@ -267,7 +267,7 @@ Ihex_Read_Data_Block (FILE *file, datablock *block)
       block->ext_offset = off;
       break;
     }
-    
+
     //read the checksum end byte
     i = read_next_byte (line, i);
     if (i==-1)

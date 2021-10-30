@@ -28,7 +28,7 @@ main (int argc, char **argv)
 
   prog_mode = 0;
   prog_stat = 0;
-  
+
 //check user arguments
   for (int i=1; i<argc; i++) {
     if ( !strcasecmp(argv[i], "-o") ) {
@@ -87,7 +87,7 @@ main (int argc, char **argv)
     char namescan[128];
     ioreg_cnt = 0;
     uint32_t uk;
-    
+
     //first we count the number of definitions for correct size allocation
     while ( fgets(linie, sizeof(linie), iofile) ) {
       if ( !strncmp(linie, ".equ ", 5)
@@ -102,7 +102,7 @@ main (int argc, char **argv)
       printf ("%s:%s:%i: %s\n", __FILE__, __func__, __LINE__, strerror(errno));
       exit (EXIT_FAILURE);
     }
-    
+
     //now we scan the io definitions in ioregtable
     ioreg_cnt = 0;
     while ( fgets(linie, sizeof(linie), iofile) ) {
@@ -111,7 +111,7 @@ main (int argc, char **argv)
           && (uk >= 0x5000)
           && (uk < 0x5800) ) {
         int i = strlen(namescan);
-        
+
         if (namescan[i-1]==',') {
           namescan[i-1] = 0x00;
           namescan[31]  = 0x00;
@@ -129,7 +129,7 @@ main (int argc, char **argv)
   datablock dd = {0, 0, 0, 0, NULL};
 
   area = AREA_NONE;
-  do {    
+  do {
     fpos = ftell(hexfile);
     q = Ihex_Read_Data_Block_Size (hexfile, &db);
     if (q>=0) {
@@ -140,13 +140,12 @@ main (int argc, char **argv)
              strerror(errno));
           exit (EXIT_FAILURE);
         }
-      
+
         dd.data = data;
         dd.start_add = db.start_add;
         fseek(hexfile, fpos, SEEK_SET);
 
         if (Ihex_Read_Data_Block (hexfile, &dd) == -1) {
-          puts("eerrororr");
           exit(EXIT_FAILURE);
         }
 
@@ -186,7 +185,7 @@ main (int argc, char **argv)
   fclose (hexfile);
   fclose (asmfile);
 
-  exit(EXIT_SUCCESS);	
+  exit(EXIT_SUCCESS);
 }
 
 /* Fin */

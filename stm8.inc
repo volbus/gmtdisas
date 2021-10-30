@@ -26,6 +26,20 @@
 .equ PD_CR1, 		0x5012
 .equ PD_CR2, 		0x5013
 
+; Port E
+.equ PE_ODR, 		0x5014
+.equ PE_IDR, 		0x5015
+.equ PE_DDR, 		0x5016
+.equ PE_CR1, 		0x5017
+.equ PE_CR2, 		0x5018
+
+; Port F
+.equ PF_ODR, 		0x5019
+.equ PF_IDR, 		0x501A
+.equ PF_DDR, 		0x501B
+.equ PF_CR1, 		0x501C
+.equ PF_CR2, 		0x501D
+
 ; Flash
 .equ FLASH_CR1,		0x5050
 .equ FLASH_CR2,		0x5051
@@ -271,6 +285,11 @@
 
 ; IRTIM
 .equ IR_CR,		0x52FF
+
+; COMP
+.equ COMP_CR,		0x5300
+.equ COMP_CSR,		0x5301
+.equ COMP_CCS,		0x5302
 
 ; ADC1
 .equ ADC1_CR1,		0x5340
