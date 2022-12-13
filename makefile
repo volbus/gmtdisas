@@ -1,5 +1,5 @@
 
-CFLAGS= -g -Wall -o2 -std=gnu99
+CFLAGS= -g -Wall -Werror -o2 -std=gnu99
 CC= gcc
 
 all:
