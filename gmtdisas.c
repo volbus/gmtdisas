@@ -71,7 +71,7 @@ main (int argc, char **argv)
   if (outfilename)
     asmfile = fopen (outfilename, "w+");
   else
-    asmfile = fopen ("dissasembly.asm", "w+");
+    asmfile = stdout;
   if (!asmfile) {
     puts (strerror(errno));
     exit (EXIT_FAILURE);
