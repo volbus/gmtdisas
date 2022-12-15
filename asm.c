@@ -197,7 +197,7 @@ Write_Code_Data (FILE *file, datablock *block) {
             n = oc[2]<<8 | oc[3];
             if ( (n>=0x5000) && (n<0x5800) && !Get_IOreg_Name(n, ioname+1) ) {
               ioname[0] = ' ';
-              wrno += fprintf (file, ioname);
+              wrno += fprintf (file, "%s", ioname);
             } else {
               wrno += fprintf (file, " 0x%02X%02X", oc[2], oc[3]);
             }
@@ -210,7 +210,7 @@ Write_Code_Data (FILE *file, datablock *block) {
             n = oc[3]<<8 | oc[4];
             if ( (n>=0x5000) && (n<0x5800) && !Get_IOreg_Name(n, ioname+1) ) {
               ioname[0] = ' ';
-              wrno += fprintf (file, ioname);
+              wrno += fprintf (file, "%s", ioname);
             } else {
               wrno += fprintf (file, " 0x%02X%02X", oc[3], oc[4]);
             }
@@ -223,7 +223,7 @@ Write_Code_Data (FILE *file, datablock *block) {
             n = oc[4]<<8 | oc[5];
             if ( (n>=0x5000) && (n<0x5800) && !Get_IOreg_Name(n, ioname+1) ) {
               ioname[0] = ' ';
-              wrno += fprintf (file, ioname);
+              wrno += fprintf (file, "%s", ioname);
             } else {
               wrno += fprintf (file, " 0x%02X%02X", oc[4], oc[5]);
             }
@@ -290,7 +290,7 @@ Write_Code_Data (FILE *file, datablock *block) {
             n = oc[2]<<8 | oc[3];
             if ( (n>=0x5000) && (n<0x5800) && !Get_IOreg_Name(n, ioname+1) ) {
               ioname[0] = ' ';
-              wrno += fprintf (file, ioname);
+              wrno += fprintf (file, "%s", ioname);
             } else {
               wrno += fprintf (file, " 0x%02X%02X", oc[2], oc[3]);
             }
@@ -354,7 +354,7 @@ Write_Code_Data (FILE *file, datablock *block) {
             if ( (n>=0x5000) && (n<0x5800) && !Get_IOreg_Name(n, ioname+2) ) {
               ioname[0] = ',';
               ioname[1] = ' ';
-              wrno += fprintf (file, ioname);
+              wrno += fprintf (file, "%s", ioname);
             } else {
               wrno += fprintf (file, ", 0x%02X%02X", oc[2], oc[3]);
             }
@@ -368,7 +368,7 @@ Write_Code_Data (FILE *file, datablock *block) {
             if ( (n>=0x5000) && (n<0x5800) && !Get_IOreg_Name(n, ioname+2) ) {
               ioname[0] = ',';
               ioname[1] = ' ';
-              wrno += fprintf (file, ioname);
+              wrno += fprintf (file, "%s", ioname);
             } else {
               wrno += fprintf (file, ", 0x%02X%02X", oc[3], oc[4]);
             }
@@ -382,7 +382,7 @@ Write_Code_Data (FILE *file, datablock *block) {
             if ( (n>=0x5000) && (n<0x5800) && !Get_IOreg_Name(n, ioname+2) ) {
               ioname[0] = ',';
               ioname[1] = ' ';
-              wrno += fprintf (file, ioname);
+              wrno += fprintf (file, "%s", ioname);
             } else {
               wrno += fprintf (file, ", 0x%02X%02X", oc[4], oc[5]);
             }
@@ -450,7 +450,7 @@ Write_Code_Data (FILE *file, datablock *block) {
             if ( (n>=0x5000) && (n<0x5800) && !Get_IOreg_Name(n, ioname+2) ) {
               ioname[0] = ',';
               ioname[1] = ' ';
-              wrno += fprintf (file, ioname);
+              wrno += fprintf (file, "%s", ioname);
             } else {
               wrno += fprintf (file, ", 0x%02X%02X", oc[2], oc[3]);
             }
