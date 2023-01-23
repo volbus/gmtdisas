@@ -3,9 +3,8 @@
 
 #include "gmtdisas.h"
 
-const char * path_list[5] = {
+const char * path_list[4] = {
   "",
-  "~/",
   "/usr/share/",
   "/usr/share/gmtdisas/",
   "./gmtdisas/"
@@ -29,12 +28,12 @@ show_help (void)
 
 FILE * try_open(const char * filename, const char * mode)
 {
-  char fname[256];
+  char fullname[PATH_MAX];
   int i=0;
   FILE * file=0;
   do {
-    snprintf(fname, 256,"%s%s", path_list[i], filename);
-    file = fopen (fname, mode);
+    snprintf(fullname, 256,"%s%s", path_list[i], filename);
+    file = fopen (fullname, mode);
     if (file) {
       return file;
     };
@@ -105,6 +104,7 @@ main (int argc, char **argv)
   if (prog_mode & PROG_MODE_IONAME) {
     FILE *iofile = try_open ("stm8.inc", "r");
     if (!iofile) {
+      fprintf (stderr, "%s:%s:%i: %s\n", __FILE__, __func__, __LINE__,"Unable to locate stm8.inc. Swithing to -noioname mode");
       puts (strerror(errno));
       prog_mode &= ~PROG_MODE_IONAME;
     }else{
