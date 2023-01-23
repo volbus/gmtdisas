@@ -8,7 +8,7 @@ const char * path_list[5] = {
   "~/",
   "/usr/share/",
   "/usr/share/gmtdisas/",
-  "./gmtdisas"
+  "./gmtdisas/"
 };
 
 const int path_list_len = (sizeof(path_list)/sizeof(path_list[0]));
@@ -107,42 +107,43 @@ main (int argc, char **argv)
     if (!iofile) {
       puts (strerror(errno));
       prog_mode &= ~PROG_MODE_IONAME;
-    }
-    char linie[128];
-    char namescan[128];
-    ioreg_cnt = 0;
-    uint32_t uk;
+    }else{
+      char linie[128];
+      char namescan[128];
+      ioreg_cnt = 0;
+      uint32_t uk;
 
-    //first we count the number of definitions for correct size allocation
-    while ( fgets(linie, sizeof(linie), iofile) ) {
-      if ( !strncmp(linie, ".equ ", 5)
-          && (sscanf(linie+5, "%*s %X", &uk) == 1)
-          && (uk >= 0x5000)
-          && (uk < 0x5800) )
-        ioreg_cnt++;
-    }
-    rewind (iofile);
-    ioregtable = malloc (sizeof(ioreg)*ioreg_cnt);
-    if (!ioregtable) {
-      printf ("%s:%s:%i: %s\n", __FILE__, __func__, __LINE__, strerror(errno));
-      exit (EXIT_FAILURE);
-    }
-
-    //now we scan the io definitions in ioregtable
-    ioreg_cnt = 0;
-    while ( fgets(linie, sizeof(linie), iofile) ) {
-      if ( !strncmp(linie, ".equ ", 5)
-          && (sscanf(linie+5, "%s %X", namescan, &uk) == 2)
-          && (uk >= 0x5000)
-          && (uk < 0x5800) ) {
-        int i = strlen(namescan);
-
-        if (namescan[i-1]==',') {
-          namescan[i-1] = 0x00;
-          namescan[31]  = 0x00;
-          strncpy ( (ioregtable + ioreg_cnt)->name, namescan, 32);
-          (ioregtable + ioreg_cnt)->add = uk;
+      //first we count the number of definitions for correct size allocation
+      while ( fgets(linie, sizeof(linie), iofile) ) {
+        if ( !strncmp(linie, ".equ ", 5)
+            && (sscanf(linie+5, "%*s %X", &uk) == 1)
+            && (uk >= 0x5000)
+            && (uk < 0x5800) )
           ioreg_cnt++;
+      }
+      rewind (iofile);
+      ioregtable = malloc (sizeof(ioreg)*ioreg_cnt);
+      if (!ioregtable) {
+        printf ("%s:%s:%i: %s\n", __FILE__, __func__, __LINE__, strerror(errno));
+        exit (EXIT_FAILURE);
+      }
+
+      //now we scan the io definitions in ioregtable
+      ioreg_cnt = 0;
+      while ( fgets(linie, sizeof(linie), iofile) ) {
+        if ( !strncmp(linie, ".equ ", 5)
+            && (sscanf(linie+5, "%s %X", namescan, &uk) == 2)
+            && (uk >= 0x5000)
+            && (uk < 0x5800) ) {
+          int i = strlen(namescan);
+
+          if (namescan[i-1]==',') {
+            namescan[i-1] = 0x00;
+            namescan[31]  = 0x00;
+            strncpy ( (ioregtable + ioreg_cnt)->name, namescan, 32);
+            (ioregtable + ioreg_cnt)->add = uk;
+            ioreg_cnt++;
+          }
         }
       }
     }
