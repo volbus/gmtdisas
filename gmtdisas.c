@@ -53,7 +53,6 @@ main (int argc, char **argv)
   prog_stat = 0;
 
   //check user arguments
-  prog_mode |= PROG_MODE_IONAME; //enable IO names by default
   for (int i=1; i<argc; i++) {
     if ( !strcasecmp(argv[i], "-o") ) {
       i++;
@@ -64,8 +63,8 @@ main (int argc, char **argv)
       outfilename = argv[i];
     } else if ( !strcasecmp(argv[i], "-rel0") ) {
       prog_mode |= PROG_MODE_REL0;
-    } else if ( !strcasecmp(argv[i], "-noioname") ) {
-      prog_mode &= ~PROG_MODE_IONAME;
+    } else if ( !strcasecmp(argv[i], "-ioname") ) {
+      prog_mode |= PROG_MODE_IONAME;
     } else if ( !strcasecmp(argv[i], "-h") ) {
       show_help ();
     } else if ( !strcasecmp(argv[i], "--help") ) {
