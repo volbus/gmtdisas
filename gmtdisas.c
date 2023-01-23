@@ -1,8 +1,16 @@
 /* Main source file for gmtdisas
  * Cristian Gyorgy, 2021 */
 
-
 #include "gmtdisas.h"
+
+const char * path_list[4] = {
+  "",
+  "/usr/share/",
+  "/usr/share/gmtdisas/",
+  "./gmtdisas/"
+};
+
+const int path_list_len = (sizeof(path_list)/sizeof(path_list[0]));
 
 static void
 show_version (void)
@@ -18,6 +26,21 @@ show_help (void)
   puts (help_text);
 }
 
+FILE * try_open(const char * filename, const char * mode)
+{
+  char fullname[PATH_MAX];
+  int i=0;
+  FILE * file=0;
+  do {
+    snprintf(fullname, 256,"%s%s", path_list[i], filename);
+    file = fopen (fullname, mode);
+    if (file) {
+      return file;
+    };
+    i++;
+  } while (i<path_list_len);
+  return 0;
+}
 
 int
 main (int argc, char **argv)
@@ -29,7 +52,7 @@ main (int argc, char **argv)
   prog_mode = 0;
   prog_stat = 0;
 
-//check user arguments
+  //check user arguments
   for (int i=1; i<argc; i++) {
     if ( !strcasecmp(argv[i], "-o") ) {
       i++;
@@ -78,46 +101,48 @@ main (int argc, char **argv)
   }
 
   if (prog_mode & PROG_MODE_IONAME) {
-    FILE *iofile = fopen ("/usr/share/gmtdisas/stm8.inc", "r");
+    FILE *iofile = try_open ("stm8.inc", "r");
     if (!iofile) {
+      fprintf (stderr, "%s:%s:%i: %s\n", __FILE__, __func__, __LINE__,"Unable to locate stm8.inc. Swithing to -noioname mode");
       puts (strerror(errno));
       prog_mode &= ~PROG_MODE_IONAME;
-    }
-    char linie[128];
-    char namescan[128];
-    ioreg_cnt = 0;
-    uint32_t uk;
+    }else{
+      char linie[128];
+      char namescan[128];
+      ioreg_cnt = 0;
+      uint32_t uk;
 
-    //first we count the number of definitions for correct size allocation
-    while ( fgets(linie, sizeof(linie), iofile) ) {
-      if ( !strncmp(linie, ".equ ", 5)
-          && (sscanf(linie+5, "%*s %X", &uk) == 1)
-          && (uk >= 0x5000)
-          && (uk < 0x5800) )
-        ioreg_cnt++;
-    }
-    rewind (iofile);
-    ioregtable = malloc (sizeof(ioreg)*ioreg_cnt);
-    if (!ioregtable) {
-      printf ("%s:%s:%i: %s\n", __FILE__, __func__, __LINE__, strerror(errno));
-      exit (EXIT_FAILURE);
-    }
-
-    //now we scan the io definitions in ioregtable
-    ioreg_cnt = 0;
-    while ( fgets(linie, sizeof(linie), iofile) ) {
-      if ( !strncmp(linie, ".equ ", 5)
-          && (sscanf(linie+5, "%s %X", namescan, &uk) == 2)
-          && (uk >= 0x5000)
-          && (uk < 0x5800) ) {
-        int i = strlen(namescan);
-
-        if (namescan[i-1]==',') {
-          namescan[i-1] = 0x00;
-          namescan[31]  = 0x00;
-          strncpy ( (ioregtable + ioreg_cnt)->name, namescan, 32);
-          (ioregtable + ioreg_cnt)->add = uk;
+      //first we count the number of definitions for correct size allocation
+      while ( fgets(linie, sizeof(linie), iofile) ) {
+        if ( !strncmp(linie, ".equ ", 5)
+            && (sscanf(linie+5, "%*s %X", &uk) == 1)
+            && (uk >= 0x5000)
+            && (uk < 0x5800) )
           ioreg_cnt++;
+      }
+      rewind (iofile);
+      ioregtable = malloc (sizeof(ioreg)*ioreg_cnt);
+      if (!ioregtable) {
+        printf ("%s:%s:%i: %s\n", __FILE__, __func__, __LINE__, strerror(errno));
+        exit (EXIT_FAILURE);
+      }
+
+      //now we scan the io definitions in ioregtable
+      ioreg_cnt = 0;
+      while ( fgets(linie, sizeof(linie), iofile) ) {
+        if ( !strncmp(linie, ".equ ", 5)
+            && (sscanf(linie+5, "%s %X", namescan, &uk) == 2)
+            && (uk >= 0x5000)
+            && (uk < 0x5800) ) {
+          int i = strlen(namescan);
+
+          if (namescan[i-1]==',') {
+            namescan[i-1] = 0x00;
+            namescan[31]  = 0x00;
+            strncpy ( (ioregtable + ioreg_cnt)->name, namescan, 32);
+            (ioregtable + ioreg_cnt)->add = uk;
+            ioreg_cnt++;
+          }
         }
       }
     }
@@ -182,6 +207,7 @@ main (int argc, char **argv)
 
   if (prog_mode & PROG_MODE_IONAME)
     free (ioregtable);
+  fflush(asmfile);
   fclose (hexfile);
   fclose (asmfile);
 
