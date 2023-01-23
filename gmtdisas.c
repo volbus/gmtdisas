@@ -35,15 +35,11 @@ FILE * try_open(const char * filename, const char * mode)
   do {
     snprintf(fname, 256,"%s%s", path_list[i], filename);
     file = fopen (fname, mode);
-    if (!file) {
-      puts (strerror(errno));
-      exit (EXIT_FAILURE);
-    } else {
+    if (file) {
       return file;
     };
   } while (i<path_list_len);
-  puts (strerror(errno));
-  exit (EXIT_FAILURE);
+  return 0;
 }
 
 int
