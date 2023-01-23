@@ -38,6 +38,7 @@ FILE * try_open(const char * filename, const char * mode)
     if (file) {
       return file;
     };
+    i++;
   } while (i<path_list_len);
   return 0;
 }
