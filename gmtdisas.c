@@ -1,8 +1,17 @@
 /* Main source file for gmtdisas
  * Cristian Gyorgy, 2021 */
 
-
 #include "gmtdisas.h"
+
+const char * path_list[5] = {
+  "",
+  "~/",
+  "/usr/share/",
+  "/usr/share/gmtdisas/",
+  "./gmtdisas"
+};
+
+const int path_list_len = (sizeof(path_list)/sizeof(path_list[0]));
 
 static void
 show_version (void)
@@ -18,6 +27,24 @@ show_help (void)
   puts (help_text);
 }
 
+FILE * try_open(const char * filename, const char * mode)
+{
+  char fname[256];
+  int i=0;
+  FILE * file=0;
+  do {
+    snprintf(fname, 256,"%s%s", path_list[i], filename);
+    file = fopen (fname, mode);
+    if (!file) {
+      puts (strerror(errno));
+      exit (EXIT_FAILURE);
+    } else {
+      return file;
+    };
+  } while (i<path_list_len);
+  puts (strerror(errno));
+  exit (EXIT_FAILURE);
+}
 
 int
 main (int argc, char **argv)
@@ -29,7 +56,8 @@ main (int argc, char **argv)
   prog_mode = 0;
   prog_stat = 0;
 
-//check user arguments
+  //check user arguments
+  prog_mode |= PROG_MODE_IONAME; //enable IO names by default
   for (int i=1; i<argc; i++) {
     if ( !strcasecmp(argv[i], "-o") ) {
       i++;
@@ -40,8 +68,8 @@ main (int argc, char **argv)
       outfilename = argv[i];
     } else if ( !strcasecmp(argv[i], "-rel0") ) {
       prog_mode |= PROG_MODE_REL0;
-    } else if ( !strcasecmp(argv[i], "-ioname") ) {
-      prog_mode |= PROG_MODE_IONAME;
+    } else if ( !strcasecmp(argv[i], "-noioname") ) {
+      prog_mode &= ~PROG_MODE_IONAME;
     } else if ( !strcasecmp(argv[i], "-h") ) {
       show_help ();
     } else if ( !strcasecmp(argv[i], "--help") ) {
@@ -78,7 +106,7 @@ main (int argc, char **argv)
   }
 
   if (prog_mode & PROG_MODE_IONAME) {
-    FILE *iofile = fopen ("/usr/share/gmtdisas/stm8.inc", "r");
+    FILE *iofile = try_open ("stm8.inc", "r");
     if (!iofile) {
       puts (strerror(errno));
       prog_mode &= ~PROG_MODE_IONAME;
@@ -182,6 +210,7 @@ main (int argc, char **argv)
 
   if (prog_mode & PROG_MODE_IONAME)
     free (ioregtable);
+  fflush(asmfile);
   fclose (hexfile);
   fclose (asmfile);
 
