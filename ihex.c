@@ -171,6 +171,16 @@ Ihex_Read_Data_Block_Size (FILE *file, datablock *block)
       off *= 16;
       block->ext_offset = off;
       break;
+    case 0x04:
+    //extended linear address
+      if (cnt != 2)
+        goto file_err;
+      off = read_next_word (line, 9);
+      if (off == -1)
+        goto file_err;
+      off <<= 16;
+      block->ext_offset = off;
+      break;
     default:
       printf ("Not supported record type found in hex file, line #%d\n",
           crtline);
@@ -264,6 +274,14 @@ Ihex_Read_Data_Block (FILE *file, datablock *block)
       i += 4;
       chksum += (off>>8) + (off & 0xFF);
       off *= 16;
+      block->ext_offset = off;
+      break;
+    case 0x04:
+    //extended linear address
+      off = read_next_word (line, i);
+      i += 4;
+      chksum += (off>>8) + (off & 0xFF);
+      off <<= 16;
       block->ext_offset = off;
       break;
     }
